@@ -43,6 +43,8 @@ function a11yProps(index) {
   };
 }
 
+
+
 const TabsMain = () => {
 
     
@@ -57,20 +59,6 @@ const TabsMain = () => {
         setValue(newValue);
     };
 
-    var options = {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0,
-    };
-
-
-    function success(pos) {
-      var crd = pos.coords;
-      console.log(pos)
-
-      var newArr = [crd.latitude , crd.longitude , crd.accuracy]
-
-      setCords(newArr)
     
                                   /////////////////////////
                                   //                     // 
@@ -78,13 +66,22 @@ const TabsMain = () => {
                                   //                     //
                                   /////////////////////////
 
+    var options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0,
+    };
+
+    function success(pos) {
+      var crd = pos.coords;
+
       var key = 'ee6f8dd45e1dcbf7168462eed8e430ff'
 
 
-      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${crd.latitude}&lon=${crd.longitude}&appid=${key}`)
+      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${crd.latitude}&lon=${crd.longitude}&appid=${key}&units=metric`)
       .then(res=>res.json())
       .then(result=>{
-        console.log(result)
+        console.log(result.length)
         setData(result)
 
       })
@@ -93,13 +90,18 @@ const TabsMain = () => {
       .then(result=>{
         setLoc(result)
       })
+
+
+
+
+
     }
-    
+
     function errors(err) {
-      console.warn(`err`);
+      console.log(err);
     }
 
-
+console.log(data)
 
     React.useEffect((()=>{
       if(navigator.geolocation) {
@@ -108,16 +110,16 @@ const TabsMain = () => {
         navigator.permissions
         .query({ name: "geolocation" })
         .then(function (result) {
-          if (result.state === "granted") {
 
-              console.log(navigator)
-            navigator.geolocation.getCurrentPosition(success);
 
-          } else if (result.state === "prompt") {
-            console.log(navigator)
-            navigator.geolocation.getCurrentPosition(success , errors , options);
-            
-          } 
+                if (result.state === "granted") {
+
+                navigator.geolocation.getCurrentPosition(success);
+
+                } else if (result.state === "prompt") {
+                navigator.geolocation.getCurrentPosition(success , errors , options);
+                    
+                } 
          
         });  
         
@@ -125,9 +127,12 @@ const TabsMain = () => {
       } else {
         console.log('Error')
       }
+
+
     })
-    
-     , [])
+     ,[])
+
+
 
     return (
 
@@ -156,7 +161,7 @@ const TabsMain = () => {
         </Box>
 
         <TabPanel value={value} index={0}>
-            <Current data={data} locs={loc}/>
+            <Current  data={data} loc={loc}/>
         </TabPanel>
         <TabPanel value={value} index={1}>
           Hourly
