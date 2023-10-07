@@ -5,6 +5,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Current from './parts/current'
+import Daily from './parts/daily'
 
 
 
@@ -49,9 +50,7 @@ const TabsMain = () => {
 
     
      const [value, setValue] = React.useState(0);
-     const [cords , setCords] = React.useState(['' , ''])
-     const [data , setData] = React.useState([])
-     const [loc , setLoc ] = React.useState([])
+
 
 
 
@@ -59,78 +58,8 @@ const TabsMain = () => {
         setValue(newValue);
     };
 
-    
-                                  /////////////////////////
-                                  //                     // 
-                                  //    //  API CALLS    //
-                                  //                     //
-                                  /////////////////////////
+ 
 
-    var options = {
-      enableHighAccuracy: true,
-      timeout: 5000,
-      maximumAge: 0,
-    };
-
-    function success(pos) {
-      var crd = pos.coords;
-
-      var key = 'ee6f8dd45e1dcbf7168462eed8e430ff'
-
-
-      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${crd.latitude}&lon=${crd.longitude}&appid=${key}&units=metric`)
-      .then(res=>res.json())
-      .then(result=>{
-        console.log(result.length)
-        setData(result)
-
-      })
-      fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${crd.latitude}&lon=${crd.longitude}&appid=${key}`)
-      .then(res=>res.json())
-      .then(result=>{
-        setLoc(result)
-      })
-
-
-
-
-
-    }
-
-    function errors(err) {
-      console.log(err);
-    }
-
-console.log(data)
-
-    React.useEffect((()=>{
-      if(navigator.geolocation) {
-
-
-        navigator.permissions
-        .query({ name: "geolocation" })
-        .then(function (result) {
-
-
-                if (result.state === "granted") {
-
-                navigator.geolocation.getCurrentPosition(success);
-
-                } else if (result.state === "prompt") {
-                navigator.geolocation.getCurrentPosition(success , errors , options);
-                    
-                } 
-         
-        });  
-        
-      
-      } else {
-        console.log('Error')
-      }
-
-
-    })
-     ,[])
 
 
 
@@ -161,13 +90,13 @@ console.log(data)
         </Box>
 
         <TabPanel value={value} index={0}>
-            <Current  data={data} loc={loc}/>
+            <Current/>
         </TabPanel>
         <TabPanel value={value} index={1}>
           Hourly
         </TabPanel>
         <TabPanel value={value} index={2}>
-          Daily
+            <Daily />
         </TabPanel>
         <TabPanel value={value} index={3}>
           Monthly
