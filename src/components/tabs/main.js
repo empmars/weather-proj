@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Current from './parts/current'
 import Daily from './parts/daily'
+import Hourly from './parts/hourly'
 
 
 
@@ -93,7 +94,7 @@ const TabsMain = () => {
             <Current/>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          Hourly
+          <Hourly />
         </TabPanel>
         <TabPanel value={value} index={2}>
             <Daily />

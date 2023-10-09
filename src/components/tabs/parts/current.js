@@ -240,9 +240,10 @@ class Current extends React.Component {
 
                                                 {
 
-                                                 
+                                                    
 
                                                     this.state.detailData.map((cur , i)=>{
+                                                    
                                                         return(
 
                                                             <>
@@ -257,7 +258,11 @@ class Current extends React.Component {
 
 
                                                             </Grid>
-                                                            <Divider sx={{mt: 1}}/> 
+                                                        {
+                                                            i === this.state.detailData.length - 1 ? console.log('MS') : <Divider sx={{mt: 1}}/>
+                                                        }
+
+                                                             
                                                             </>
                                                         )
                                                     })
@@ -303,7 +308,9 @@ class Current extends React.Component {
 
 
                                                                 </Grid>
-                                                                <Divider sx={{mt: 1}}/> 
+                                                                       {
+                                                            i === this.state.otherDetail.length - 1 ? console.log('MS') : <Divider sx={{mt: 1}}/>
+                                                        }
                                                                 </>
                                                             )
                                                         })
