@@ -47,10 +47,11 @@ function a11yProps(index) {
 
 
 
-const TabsMain = () => {
+const TabsMain = ({customLoc}) => {
 
     
      const [value, setValue] = React.useState(0);
+     
 
 
 
@@ -85,25 +86,17 @@ const TabsMain = () => {
             <Tab label="Today" {...a11yProps(0)} sx={{fontWeight: 600}} />
             <Tab label="Hourly" {...a11yProps(1)} sx={{fontWeight: 600}} />
             <Tab label="Daily" {...a11yProps(2)} sx={{fontWeight: 600}} />
-            <Tab label="Monthly" {...a11yProps(3)} sx={{fontWeight: 600}} />
-            <Tab label="Yearly" {...a11yProps(4)} sx={{fontWeight: 600}} />
           </Tabs>
         </Box>
 
         <TabPanel value={value} index={0}>
-            <Current/>
+            <Current customLoc={customLoc} />
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <Hourly />
+          <Hourly customLoc={customLoc} />
         </TabPanel>
         <TabPanel value={value} index={2}>
-            <Daily />
-        </TabPanel>
-        <TabPanel value={value} index={3}>
-          Monthly
-        </TabPanel>
-        <TabPanel value={value} index={4}>
-          Yearly
+            <Daily customLoc={customLoc} />
         </TabPanel>
     
       </>

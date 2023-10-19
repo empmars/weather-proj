@@ -57,13 +57,15 @@ class Hourly extends React.Component {
       
                             var hours = []
 
-                            var timeNow = new Date().toISOString()
-                            timeNow = Number(timeNow.slice(8, 10))
-                        
+                            var timeNow = new Date().toUTCString()
+                            timeNow = Number(timeNow.slice(16, 19))
+                     
 
                             var timeTill = Number(timeNow) + 13
 
-
+                                        
+         
+                                
                     for ( var i = timeNow ; i < timeTill ; i++ ) {
                                 
                                 
@@ -72,7 +74,6 @@ class Hourly extends React.Component {
                                 var time = new Date(result.hourly.time[i]).toLocaleString('en-US', {
                                         timezone
                                     })
-                                
                                 var weatherCode = result.hourly.weathercode[i]
 
                                 

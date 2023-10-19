@@ -46,7 +46,7 @@ class Current extends React.Component {
 
 
         var self = this
-
+   
     
         function success(pos) {
         
@@ -151,8 +151,12 @@ class Current extends React.Component {
 
         function errors(err) {
         console.log(err);
-        }
+        
+    }
 
+
+
+        console.log(self.props.customLoc)    
         if(navigator.geolocation) {
 
 
