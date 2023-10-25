@@ -1,14 +1,16 @@
-import { Box ,  Container , Grid , TextField , InputAdornment , SvgIcon } from '@mui/material';
+import {
+  ThemeProvider,
+  createTheme,
+  responsiveFontSizes,
+} from '@mui/material/styles';
 import * as React from 'react';
-import Nav  from '../components/nav/main.js'
-import TabsMain  from '../components/tabs/main.js'
+import Nav from '../components/nav/main.js';
+import TabsMain from '../components/tabs/main.js';
 const {flag} = require('country-emoji');
 
 
-
-
-  
-
+var  theme = createTheme();
+theme = responsiveFontSizes(theme);
 
 
 class App extends React.Component  {
@@ -17,9 +19,9 @@ class App extends React.Component  {
 
       super(props)
       this.state = {
-        matchedName: [],
-        matchedCords: [],
-        selectedName: ''
+        matchedName: [[] , []],
+        matchedCords: {},
+      
       }
 
 
@@ -37,7 +39,7 @@ class App extends React.Component  {
           var matchedName = result.results.map((cur) => {
             var code = cur.country_code.toLowerCase()
             
-            return `${cur.name} ${flag(code)}`
+            return `${cur.name} ${flag(code)} (${cur.latitude} , ${cur.longitude})`
 
           }) 
 
@@ -47,32 +49,41 @@ class App extends React.Component  {
 
           })
 
-
-        
-          console.log(cords) 
-
-          
-            self.setState({matchedName: matchedName})
-
+          var matchedNameArr = [matchedName, cords]
+                 
+            self.setState({matchedName: matchedNameArr})
+     
         }
           
         })
     
   }
 
-  selectedName = (name) => {
-      this.setState({selectedName : name})    
+  selectedCords = (cordObj) => {
+       var final = this.state.matchedName[1].map((cur , i)=>{
+             
+              
+              if(cur[1] == cordObj.latitude && cur [2] == cordObj.longitude) {
+                var obj = {
+                  'latitude' : cur[1],
+                  'longitude': cur[2]
+                }
+                this.setState({matchedCords : obj})
+              }
+       })
   }
 
 
+
   render() {
-    console.log(this.state)
+  
 
         return (
           <>
-           
-            <Nav searchField = {(e)=>{this.searchField(e)}} matchedName = {this.state.matchedName} selectedName={(name)=>{this.selectedName(name)}}/>
-            <TabsMain customLoc= {this.state.selectedName} />
+           <ThemeProvider theme={theme}>
+              <Nav searchField = {(e)=>{this.searchField(e)}} matchedName = {this.state.matchedName} selectedCords={(cordObj)=>{this.selectedCords(cordObj)}}/>
+              <TabsMain customLoc= {this.state.matchedCords} />
+            </ThemeProvider>
           </>
         )
 

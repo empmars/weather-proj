@@ -42,11 +42,10 @@ class Nav extends React.Component {
     } 
   }
 
-
   render() {
+
     
 
-      console.log(this.state)
       var self = this
       
       return (
@@ -72,32 +71,47 @@ class Nav extends React.Component {
                   The Weather App
                 </Typography>
               </Box>
-              <Box sx={{display: 'flex' , width: {xs: '100%' , sm : '40%'} , alignItems: 'center'}}>
+              <Box sx={{display: 'flex'  , alignItems: 'center' , width: {xs: '100%' , sm : '40%'}}}>
                 <Search>
                     <Autocomplete
                       disablePortal
                       freeSolo
-                      id="combo-box-demo"
-                      options={this.props.matchedName}
+                      id="CustomLocationSearch"
+                      options={this.props.matchedName[0]}
                       renderInput={(params) => 
                       <TextField {...params} size="small" placeholder="Enter Location" onChange={(e)=>{this.props.searchField(e)}}
-                      onKeyDown={(e) => {
-                        if(e.key === 'Enter') {
-                            var name = emojiStrip(e.target.value)
-                            console.log(name)
-                            this.props.selectedName(name)
-                          } 
-                        }} />
+                     />
                       }
 
                     />
                 </Search>
-                <Box>
+              <Box>
                      <SearchIcon sx={{backgroundColor: 'white' , color: '#1976d2' , padding:'4px', borderRadius: '100px', cursor: 'pointer' , ml: 2,
                       '&:hover' : {
                         backgroundColor: '#e3e1e1'
-                      }
-                     }}/>
+                      },
+                      display: 'flex',
+                      alignItems: 'center'
+                     }}
+                     onClick={()=>{
+                        var searchBox = document.getElementById('CustomLocationSearch')
+                        var val = searchBox.value
+                          var name = emojiStrip(val)
+                           
+                            var length = name.length
+                            var i = name.indexOf('(') + 1
+                            name = name.slice(i , length)
+                            var length2 = name.length
+                            var i2 = name.indexOf(',')
+                           
+                            var p1 = name.slice(0 , i2 - 1)
+                            var p2 = name.slice(i2+2 , length2 - 1)
+                           var cordObj = {
+                              'latitude': p1,
+                              'longitude': p2
+                           }
+                            this.props.selectedCords(cordObj)
+                      }}/>
                 </Box>
               </Box>
             </Toolbar>
