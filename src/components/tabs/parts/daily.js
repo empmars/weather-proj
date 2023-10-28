@@ -19,7 +19,7 @@ const Daily = () => {
         isLoading: true
     });
     const [days, setDays] = useState([])
-    const [loc , setLoc] = useState('')
+    const [loc, setLoc] = useState('')
 
     const context = useContext(NameContext)
 
@@ -41,19 +41,21 @@ const Daily = () => {
     };
 
     const get_City_Name = (crd) => {
-        fetch(`http://api.positionstack.com/v1/reverse?access_key=8881f0c7f52fd5eaaee9ff9640d41cec&limit=1&query=${crd.latitude},${crd.longitude}`)
+        fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${crd.latitude}&lon=${crd.longitude}&appid=ee6f8dd45e1dcbf7168462eed8e430ff`)
             .then(res => res.json())
             .then(result => {
-                console.log(result, 'oooooooooooo')
-                setLoc(result.data[0].name)
+                var name = `${result[0].name} , ${result[0].country}`
+                setLoc(name)
 
             })
 
     }
 
-   function success(pos) {
-       setState({...state , isLoading: true})
-      const crd = pos.coords ? pos.coords : pos
+
+
+    function success(pos) {
+        setState({ ...state, isLoading: true })
+        const crd = pos.coords ? pos.coords : pos
         fetch(
             `https://api.open-meteo.com/v1/forecast?latitude=${crd.latitude}&longitude=${crd.longitude}&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_sum,sunrise,sunset,windspeed_10m_max,winddirection_10m_dominant,uv_index_max,uv_index_clear_sky_max,windgusts_10m_max,precipitation_probability_max,weathercode&hourly=surface_pressure&timezone=auto&forecast_days=4`
         )
@@ -268,7 +270,7 @@ const Daily = () => {
                 })
 
                 get_City_Name(crd)
-                setState({ ...state, weather: wcArr , isLoading: false })
+                setState({ ...state, weather: wcArr, isLoading: false })
 
 
             });
@@ -308,8 +310,8 @@ const Daily = () => {
 
     if (state.isLoading) {
         return (
-          <Box>
-            <Container fullWidth={false}>
+            <Box>
+                <Container fullWidth={false}>
                     <Card sx={{ width: '100%' }}>
                         <CardContent>
                             <Grid container sx={{ justifyContent: 'center', mt: 1 }}>
@@ -319,24 +321,24 @@ const Daily = () => {
                             </Grid>
                         </CardContent>
                     </Card>
-            </Container>
-          </Box>
+                </Container>
+            </Box>
         );
     } else {
         return (
             <>
                 <Box>
                     <Container fullWidth={false}>
-                            <Card sx={{ mb: 3, width: '100%' }}>
-                                <CardContent>
-                                    <Grid container sx={{ justifyContent: 'center' }}>
-                                        <Grid item>
-                                            <Typography variant='h4'>{isEmpty(loc) ? 'Hourly Weather' : loc}</Typography>
-                                        </Grid>
+                        <Card sx={{ mb: 3, width: '100%' }}>
+                            <CardContent>
+                                <Grid container sx={{ justifyContent: 'center' }}>
+                                    <Grid item>
+                                        <Typography variant='h4'>{isEmpty(loc) ? 'Daily Weather' : loc}</Typography>
                                     </Grid>
-                                </CardContent>
-                            </Card>
-                     
+                                </Grid>
+                            </CardContent>
+                        </Card>
+
                         {
                             days.map((cur, i) => {
                                 let WC = [];
@@ -353,109 +355,109 @@ const Daily = () => {
                                 const dayName = daysList[new Date(cur[0][1]).getDay()];
 
                                 return (
-                               
-                                            <Card sx={{ width: '100%' }}>
-                                                <CardContent>
-                                                    <Grid container sx={{ justifyContent: 'start', alignItems: 'center' }}>
-                                                        <Grid item xs={12} sx={{ mt: { xs: 1, sm: 0 } }}>
-                                                            <Typography variant="h5">{`${dayName}, ${cur[0][1]}`}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Grid container sx={{ justifyContent: 'center', mt: 1, my: 2 }} spacing={1}>
-                                                        <Grid item xs={12} sm={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'end' } }}>
-                                                            <Typography variant="h4">{cur[1][1]}{'\u00b0C'}</Typography>
-                                                        </Grid>
-                                                        <Grid item sm={2} md={1} sx={{ display: { xs: 'none', sm: 'flex' }, justifyContent: 'center' }}>
-                                                            <Divider orientation="vertical" flexItem />
-                                                        </Grid>
-                                                        <Grid item xs={12} md={5} sm={5} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', md: 'start' } }}>
-                                                            {WC[1]}
-                                                            <Typography variant="h5" sx={{ ml: 1 }}>{WC[0]}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>Min. Temp{` (\u00b0C)`}:</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[2][1]}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Divider sx={{ mt: 1 }} />
-                                                    <Grid container sx={{ justifyContent: 'space_between', mt: 1 }}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>Max. Temp{` (\u00b0C)`}:</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[1][1]}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Divider sx={{ mt: 1 }} />
-                                                    <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>Feels Like{` (\u00b0C)`}:</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[3][1]}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Divider sx={{ mt: 1 }} />
-                                                    <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>Total Rain(meters)</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[5][1]}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Divider sx={{ mt: 1 }} />
-                                                    <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>Sunrise:</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>{formatTime(cur[6][1])}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Divider sx={{ mt: 1 }} />
-                                                    <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>Sunset:</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>{formatTime(cur[7][1])}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Divider sx={{ mt: 1 }} />
-                                                    <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>Windspeed(m/s):</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[8][1]}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Divider sx={{ mt: 1 }} />
-                                                    <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>Gust Speed(m/s)</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[12][1]}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Divider sx={{ mt: 1 }} />
-                                                    <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>Precipitation Probability:</Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[13][1]}</Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                </CardContent>
-                                            </Card>
-                                
+
+                                    <Card sx={{ width: '100%' }}>
+                                        <CardContent>
+                                            <Grid container sx={{ justifyContent: 'start', alignItems: 'center' }}>
+                                                <Grid item xs={12} sx={{ mt: { xs: 1, sm: 0 } }}>
+                                                    <Typography variant="h5">{`${dayName}, ${cur[0][1]}`}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                            <Grid container sx={{ justifyContent: 'center', mt: 1, my: 2 }} spacing={1}>
+                                                <Grid item xs={12} sm={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'end' } }}>
+                                                    <Typography variant="h4">{cur[1][1]}{'\u00b0C'}</Typography>
+                                                </Grid>
+                                                <Grid item sm={2} md={1} sx={{ display: { xs: 'none', sm: 'flex' }, justifyContent: 'center' }}>
+                                                    <Divider orientation="vertical" flexItem />
+                                                </Grid>
+                                                <Grid item xs={12} md={5} sm={5} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', md: 'start' } }}>
+                                                    {WC[1]}
+                                                    <Typography variant="h5" sx={{ ml: 1 }}>{WC[0]}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                            <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>Min. Temp{` (\u00b0C)`}:</Typography>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[2][1]}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                            <Divider sx={{ mt: 1 }} />
+                                            <Grid container sx={{ justifyContent: 'space_between', mt: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>Max. Temp{` (\u00b0C)`}:</Typography>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[1][1]}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                            <Divider sx={{ mt: 1 }} />
+                                            <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>Feels Like{` (\u00b0C)`}:</Typography>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[3][1]}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                            <Divider sx={{ mt: 1 }} />
+                                            <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>Total Rain(meters)</Typography>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[5][1]}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                            <Divider sx={{ mt: 1 }} />
+                                            <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>Sunrise:</Typography>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>{formatTime(cur[6][1])}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                            <Divider sx={{ mt: 1 }} />
+                                            <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>Sunset:</Typography>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>{formatTime(cur[7][1])}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                            <Divider sx={{ mt: 1 }} />
+                                            <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>Windspeed(m/s):</Typography>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[8][1]}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                            <Divider sx={{ mt: 1 }} />
+                                            <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>Gust Speed(m/s)</Typography>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[12][1]}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                            <Divider sx={{ mt: 1 }} />
+                                            <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>Precipitation Probability:</Typography>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <Typography variant="h6" sx={{ textAlign: 'center' }}>{cur[13][1]}</Typography>
+                                                </Grid>
+                                            </Grid>
+                                        </CardContent>
+                                    </Card>
+
                                 );
                             })}
                     </Container>

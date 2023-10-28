@@ -6,10 +6,10 @@ import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import { isEmpty } from 'lodash';
 import React, { useContext, useEffect, useState } from 'react';
 import { WiDayCloudy, WiDayFog, WiDayRain, WiDayRainWind, WiDaySnow, WiDaySunny, WiDayThunderstorm, WiShowers, WiSnowWind } from "weather-icons-react";
 import { NameContext } from '../main.js';
-import { isEmpty } from 'lodash';
 
 const CurrentLocation = (props) => {
   const [state, setState] = useState({
@@ -22,7 +22,7 @@ const CurrentLocation = (props) => {
     context: {},
     isLoading: true
   });
-  const [loc , setLoc] = React.useState('')
+  const [loc, setLoc] = React.useState('')
 
   const context = useContext(NameContext);
 
@@ -33,24 +33,24 @@ const CurrentLocation = (props) => {
   };
 
   const get_City_Name = (crd) => {
-      fetch(`http://api.positionstack.com/v1/reverse?access_key=8881f0c7f52fd5eaaee9ff9640d41cec&limit=1&query=${crd.latitude},${crd.longitude}`)
-      .then(res=>res.json())
-      .then(result=>{
-        console.log(result , 'oooooooooooo')
-        setLoc(result.data[0].name)
-         
+    fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${crd.latitude}&lon=${crd.longitude}&appid=ee6f8dd45e1dcbf7168462eed8e430ff`)
+      .then(res => res.json())
+      .then(result => {
+        var name = `${result[0].name} , ${result[0].country}`
+        setLoc(name)
+
       })
-  
+
   }
 
   const success = (pos) => {
-    setState({...state , isLoading: true})
+    setState({ ...state, isLoading: true })
     const crd = pos.coords ? pos.coords : pos
 
     var name = ''
-    get_City_Name(crd , name)
+    get_City_Name(crd, name)
 
-    
+
 
     fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${crd.latitude}&longitude=${crd.longitude}&daily=temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_sum,sunrise,sunset,windspeed_10m_max,winddirection_10m_dominant,uv_index_max,uv_index_clear_sky_max,windgusts_10m_max,precipitation_probability_max,weathercode&hourly=surface_pressure&timezone=auto&forecast_days=1`
@@ -199,8 +199,8 @@ const CurrentLocation = (props) => {
             break;
         };
 
-      
-      get_City_Name(crd)
+
+        get_City_Name(crd)
 
 
         setState((prevState) => ({
@@ -221,7 +221,7 @@ const CurrentLocation = (props) => {
     console.log(err);
   }
 
-  const Navigator_Functions = (success , errors , options) => {
+  const Navigator_Functions = (success, errors, options) => {
     navigator.permissions
       .query({ name: 'geolocation' })
       .then(function (result) {
@@ -234,118 +234,130 @@ const CurrentLocation = (props) => {
   }
 
   useEffect(() => {
-      // API call logic here
-      console.log(state.isLoading)
-    if(!isEmpty(context)) {
-          success(context)
+    // API call logic here
+    console.log(state.isLoading)
+    if (!isEmpty(context)) {
+      success(context)
     } else {
-          if (navigator.geolocation) {
-            Navigator_Functions(success , errors , options)
-          } else {
-              console.log('Error');
-          }
+      if (navigator.geolocation) {
+        Navigator_Functions(success, errors, options)
+      } else {
+        console.log('Error');
+      }
     }
   }, [context]);
-  
-    const { data } = state;
+
+  const { data } = state;
 
 
-    if (state.isLoading) {
-        return (
-            <Box>
-                <Container fullWidth={false}>
-                    <Card sx={{ width: '100%' }}>
-                    <CardContent>
-                        <Grid container sx={{ justifyContent: 'center', mt: 1 }}>
-                        <Grid item xs={1} sx={{ fontWeight: 600 }}>
-                            <CircularProgress />
+  if (state.isLoading) {
+    return (
+      <Box>
+        <Container fullWidth={false}>
+          <Card sx={{ width: '100%' }}>
+            <CardContent>
+              <Grid container sx={{ justifyContent: 'center', mt: 1 }}>
+                <Grid item xs={1} sx={{ fontWeight: 600 }}>
+                  <CircularProgress />
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Container>
+      </Box>
+    );
+  } else {
+    return (
+      <>
+
+        <Box sx={{ mb: 3 }}>
+          <Container fullWidth={false}>
+            <Card sx={{ width: '100%' }}>
+              <CardContent>
+                <Grid container sx={{ justifyContent: 'center' }}>
+                  <Grid item>
+                    <Typography variant="h4">{isEmpty(loc) ? 'Current Weather' : loc}</Typography>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Container>
+        </Box>
+
+        <Box>
+          <Container fullWidth="false">
+            <Card sx={{ width: '100%' }}>
+              <CardContent>
+                <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Grid item xs={12} sm={2} sx={{ mt: { xs: 1, sm: 0 } }}>
+                    <Typography variant="h5">{state.date}</Typography>
+                  </Grid>
+                </Grid>
+
+                <Grid container sx={{ justifyContent: 'center', mt: 1, my: 2 }} spacing={1}>
+                  <Grid item xs={12} sm={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'end' } }}>
+                    <Typography variant="h4">{data.daily.temperature_2m_min}{'\u00b0C'}</Typography>
+                  </Grid>
+                  <Grid item sm={2} md={1} sx={{ display: { xs: 'none', sm: 'flex' }, justifyContent: 'center' }}>
+                    <Divider orientation="vertical" flexItem />
+                  </Grid>
+                  <Grid item xs={12} md={5} sm={5} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', md: 'start' } }}>
+                    {state.icon}
+                    <Typography variant="h5" sx={{ ml: 1 }}>{state.wName}</Typography>
+                  </Grid>
+                </Grid>
+
+                {state.detailData.map((cur, i) => {
+                  return (
+                    <>
+                      <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
+                        <Grid item xs={6}>
+                          <Typography variant="h6" sx={{ textAlign: 'center', fontSize: { xs: '1rem', sm: '1.25rem' } }}>{cur[0]}</Typography>
                         </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="h6" sx={{ textAlign: 'center', fontSize: { xs: '1rem', sm: '1.25rem' } }}>{cur[1]}</Typography>
                         </Grid>
-                    </CardContent>
-                    </Card>
-                </Container>
-            </Box>
-        );
-    } else {
-        return (
-            <>
-                <Box>
-                    <Container fullWidth="false">
-                        <Card sx={{ width: '100%' }}>
-                            <CardContent>
-                                <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Grid item xs={12} sm={2} sx={{ fontWeight: 600 }}>
-                                        <Typography variant="h5">{isEmpty(loc) ? 'Current Weather' : loc}</Typography>
-                                    </Grid>
-                                    <Grid item xs={12} sm={2} sx={{ mt: { xs: 1, sm: 0 } }}>
-                                        <Typography variant="p">{state.date}</Typography>
-                                    </Grid>
-                                </Grid>
+                      </Grid>
+                      {i === state.detailData.length - 1 ? console.log('MS') : <Divider sx={{ mt: 1 }} />}
+                    </>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          </Container>
+        </Box>
 
-                                <Grid container sx={{ justifyContent: 'center', mt: 1, my: 2 }} spacing={1}>
-                                    <Grid item xs={12} sm={4} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'end' } }}>
-                                    <Typography variant="h4">{data.daily.temperature_2m_min}{'\u00b0C'}</Typography>
-                                    </Grid>
-                                    <Grid item sm={2} md={1} sx={{ display: { xs: 'none', sm: 'flex' }, justifyContent: 'center' }}>
-                                    <Divider orientation="vertical" flexItem />
-                                    </Grid>
-                                    <Grid item xs={12} md={5} sm={5} sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', md: 'start' } }}>
-                                    {state.icon}
-                                    <Typography variant="h5" sx={{ ml: 1 }}>{state.wName}</Typography>
-                                    </Grid>
-                                </Grid>
-
-                                {state.detailData.map((cur, i) => {
-                                    return (
-                                        <>
-                                            <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
-                                                <Grid item xs={6}>
-                                                    <Typography variant="h6" sx={{ textAlign: 'center', fontSize: { xs: '1rem', sm: '1.25rem' } }}>{cur[0]}</Typography>
-                                                </Grid>
-                                                <Grid item xs={6}>
-                                                    <Typography variant="h6" sx={{ textAlign: 'center', fontSize: { xs: '1rem', sm: '1.25rem' } }}>{cur[1]}</Typography>
-                                                </Grid>
-                                            </Grid>
-                                            {i === state.detailData.length - 1 ? console.log('MS') : <Divider sx={{ mt: 1 }} />}
-                                        </>
-                                    );
-                                })}
-                            </CardContent>
-                        </Card>
-                    </Container>
-                </Box>
-
-                <Box sx={{ mt: 3 }}>
-                    <Container fullWidth={false}>
-                        <Card sx={{ width: '100%' }}>
-                            <CardContent>
-                                <Grid container sx={{ my: 2 }}>
-                                    <Grid item xs={12}>
-                                        <Typography variant="h5">Other Details:</Typography>
-                                    </Grid>
-                                </Grid>
-                                {state.otherDetail.map((cur, i) => {
-                                    return (
-                                        <>
-                                            <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
-                                                <Grid item xs={6}>
-                                                    <Typography variant="h6" sx={{ textAlign: 'center', fontSize: { xs: '1rem', sm: '1.25rem' } }}>{cur[0]}</Typography>
-                                                </Grid>
-                                                <Grid item xs={6}>
-                                                    <Typography variant="h6" sx={{ textAlign: 'center', fontSize: { xs: '1rem', sm: '1.25rem' } }}>{cur[1]}</Typography>
-                                                </Grid>
-                                            </Grid>
-                                            {i === state.otherDetail.length - 1 ? console.log('MS') : <Divider sx={{ mt: 1 }} />}
-                                        </>
-                                    );
-                                })}
-                            </CardContent>
-                        </Card>
-                    </Container>
-                </Box>
-            </>
-        );
-    }
+        <Box sx={{ mt: 3 }}>
+          <Container fullWidth={false}>
+            <Card sx={{ width: '100%' }}>
+              <CardContent>
+                <Grid container sx={{ my: 2 }}>
+                  <Grid item xs={12}>
+                    <Typography variant="h5">Other Details:</Typography>
+                  </Grid>
+                </Grid>
+                {state.otherDetail.map((cur, i) => {
+                  return (
+                    <>
+                      <Grid container sx={{ justifyContent: 'space-between', mt: 1 }}>
+                        <Grid item xs={6}>
+                          <Typography variant="h6" sx={{ textAlign: 'center', fontSize: { xs: '1rem', sm: '1.25rem' } }}>{cur[0]}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="h6" sx={{ textAlign: 'center', fontSize: { xs: '1rem', sm: '1.25rem' } }}>{cur[1]}</Typography>
+                        </Grid>
+                      </Grid>
+                      {i === state.otherDetail.length - 1 ? console.log('MS') : <Divider sx={{ mt: 1 }} />}
+                    </>
+                  );
+                })}
+              </CardContent>
+            </Card>
+          </Container>
+        </Box>
+      </>
+    );
+  }
 };
 
 export default CurrentLocation;
