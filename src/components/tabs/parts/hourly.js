@@ -27,7 +27,7 @@ function Hourly() {
   };
 
   const get_City_Name = (crd) => {
-    fetch(`http://api.openweathermap.org/geo/1.0/reverse?lat=${crd.latitude}&lon=${crd.longitude}&appid=ee6f8dd45e1dcbf7168462eed8e430ff`)
+    fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${crd.latitude}&lon=${crd.longitude}&appid=ee6f8dd45e1dcbf7168462eed8e430ff`)
       .then(res => res.json())
       .then(result => {
         var name = `${result[0].name} , ${result[0].country}`
